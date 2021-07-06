@@ -1,17 +1,33 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+import os
+from setuptools import setup
 
 from version import version
 
-setup(name='rstdiff',
-      version=version,
-      description='Tool for creating a diff highlighting changes from two reStructuredText input files',
-      author='Stefan Merten',
-      author_email='smerten@oekonux.de',
-      url='http://docutils.sourceforge.net/sandbox/rstdiff/',
-      license='GPL 2',
-      requires=[ 'docutils' ],
-      scripts=[ 'rstdiff.py' ],
-      packages=[ 'treediff' ],
-     )
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+setup(
+    name='rstdiff',
+    version=version,
+    description='Tool for creating a diff highlighting changes from two reStructuredText input files',
+    long_description=read('README.rst'),
+    author='Stefan Merten',
+    author_email='smerten@oekonux.de',
+    url='https://github.com/SamWilsn/rstdiff',
+    license='GPL 2+',
+    requires=[ 'docutils' ],
+    packages=[ 'treediff' ],
+    entry_points={
+        'console_scripts': [
+            'rstdiff=rstdiff:main',
+        ]
+    },
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
+    ],
+)

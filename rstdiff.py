@@ -1128,7 +1128,8 @@ def createDiff(pub, oldTree, newTree):
         buildTree(dispatcher, diffDoc, opcode.getSubOpcodes(), oldTree, newTree)
     return diffDoc
 
-if __name__ == '__main__':
+
+def main():
     pub = processCommandLine()
 
     useOptions(pub.settings, oldOption)
@@ -1147,4 +1148,6 @@ if __name__ == '__main__':
     pub.writer.write(diffDoc, pub.destination)
     pub.writer.assemble_parts()
 
+if __name__ == '__main__':
+    main()
 # TODO The CSS classes need to be set in a CSS stylesheet

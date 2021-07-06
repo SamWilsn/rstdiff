@@ -19,8 +19,8 @@ setup(
     author_email='smerten@oekonux.de',
     url='https://github.com/SamWilsn/rstdiff',
     license='GPL 2+',
-    requires=[ 'docutils' ],
-    packages=[ 'treediff' ],
+    install_requires=[ 'docutils', 'Pygments' ],
+    packages=[ 'rstdiff', 'rstdiff.treediff' ],
     entry_points={
         'console_scripts': [
             'rstdiff=rstdiff:main',

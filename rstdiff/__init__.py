@@ -42,7 +42,7 @@ from docutils.utils import SystemMessage, Reporter, new_reporter, new_document
 from docutils.frontend import OptionParser, make_paths_absolute, validate_boolean
 from docutils.transforms import Transform
 
-from treediff import TreeMatcher, HashableNodeImpl
+from .treediff import TreeMatcher, HashableNodeImpl
 from functools import reduce
 
 ###############################################################################

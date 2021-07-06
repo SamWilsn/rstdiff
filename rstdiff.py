@@ -43,6 +43,7 @@ from docutils.frontend import OptionParser, make_paths_absolute, validate_boolea
 from docutils.transforms import Transform
 
 from treediff import TreeMatcher, HashableNodeImpl
+from functools import reduce
 
 ###############################################################################
 ###############################################################################
@@ -964,7 +965,7 @@ def buildDocument(oldTree, newTree, settings):
     if (not isinstance(oldTree, docutils.nodes.document)
         or not isinstance(newTree, docutils.nodes.document)):
         raise TypeError("Roots of trees must be documents")
-    return new_document(u"%s => %s"
+    return new_document("%s => %s"
                         % ( settings._old_source, settings._new_source, ),
                         settings)
 

@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     n1 = Node()
     n2 = Node()
-    print(n1 == n1)
-    print(n1 == n2)
-    print(n1 != n2)
+    print((n1 == n1))
+    print((n1 == n2))
+    print((n1 != n2))
     h = { n1: 'bla' }

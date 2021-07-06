@@ -18,6 +18,7 @@
 # 02111-1307, USA.
 
 from difflib import SequenceMatcher
+from functools import reduce
 
 __docformat__ = 'reStructuredText'
 
@@ -45,8 +46,8 @@ class HashableDescriptor(object):
         """Implements the descriptor protocol. Returns a function to use on
         `instance`."""
         if self.debug:
-            print('__get__ called on ' + owner.__name__ + ' by '
-                  + self.override)
+            print(('__get__ called on ' + owner.__name__ + ' by '
+                  + self.override))
         try:
             fct = self.hashableImpl.getFunction(self.override)
         except:
@@ -154,7 +155,7 @@ class HashableNodeImpl(HashableImpl):
         otherChildren = self.getChildren(other)
         if len(nodeChildren) != len(otherChildren):
             return False
-        for i in xrange(len(nodeChildren)):
+        for i in range(len(nodeChildren)):
             if not self.childEq(nodeChildren[i], otherChildren[i]):
                 return False
         return True
@@ -269,7 +270,7 @@ is only a 'replace' of one tree by the other.
         """Resolves ``replace`` elements in `opcodes` pertaining to `a` and
         `b`. Returns opcodes including nested elements for these cases."""
         result = [ ]
-        for i in xrange(len(opcodes)):
+        for i in range(len(opcodes)):
             ( opcode, aBeg, aEnd, bBeg, bEnd ) = opcodes[i]
             if opcode != 'replace':
                 result.append(opcodes[i])
@@ -278,7 +279,7 @@ is only a 'replace' of one tree by the other.
             try:
                 sm = SequenceMatcher(self.isJunk, a[aBeg:aEnd], b[bBeg:bEnd])
                 rootOpcodes = sm.get_opcodes()
-                for j in xrange(len(rootOpcodes)):
+                for j in range(len(rootOpcodes)):
                     ( subOpcode, aSubBeg, aSubEnd,
                       bSubBeg, bSubEnd ) = rootOpcodes[j]
                     if subOpcode != 'equal':
@@ -286,7 +287,7 @@ is only a 'replace' of one tree by the other.
                                         aBeg + aSubBeg, aBeg + aSubEnd,
                                         bBeg + bSubBeg, bBeg + bSubEnd, ))
                     else:
-                        for k in xrange(aSubEnd - aSubBeg):
+                        for k in range(aSubEnd - aSubBeg):
                             aIdx = aBeg + aSubBeg + k
                             bIdx = bBeg + bSubBeg + k
                             result.append(('descend',

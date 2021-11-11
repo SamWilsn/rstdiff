@@ -472,6 +472,12 @@ class Text2WordsVisitor(nodes.SparseNodeVisitor):
             ]
         text.parent.replace(text, words)
 
+    def unknown_visit(self, node):
+        pass
+
+    def unknown_departure(self, node):
+        pass
+
 
 class Words2Text(Transform):
     """Transforms a sequence of `Word`/`White` into a `Text` node."""
@@ -512,6 +518,12 @@ class Words2TextVisitor(nodes.SparseNodeVisitor):
 
     visit_Word = visit_Text
 
+    def unknown_visit(self, node):
+        pass
+
+    def unknown_departure(self, node):
+        pass
+
 
 class Generated2Inline(Transform):
     """Transforms a `generated` node into an `inline` node."""
@@ -528,6 +540,12 @@ class Generated2InlineVisitor(nodes.SparseNodeVisitor):
             **generated.attributes
         )
         generated.parent.replace(generated, inline)
+
+    def unknown_visit(self, node):
+        pass
+
+    def unknown_departure(self, node):
+        pass
 
 
 ###############################################################################

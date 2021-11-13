@@ -294,6 +294,14 @@ class OptionParser3Args(OptionParser):
 
 ###############################################################################
 ###############################################################################
+# Exceptions
+
+class DocumentUnchanged(Exception):
+    def __init__(self, document):
+        self.document = document
+
+###############################################################################
+###############################################################################
 # Helpers
 
 
@@ -1383,6 +1391,9 @@ def createDiff(pub, oldTree, newTree):
     if opcode.getCommand() not in (
         Opcode.Descend,
         Opcode.Equal,
+        Opcode.Replace,
+        Opcode.Insert,
+        Opcode.Delete,
     ):
         # TODO There should be a sense making message for this case
         # because this may happen due to up propagation of replacements
@@ -1393,8 +1404,27 @@ def createDiff(pub, oldTree, newTree):
 
     diffDoc = buildDocument(oldTree, newTree, pub.settings)
     if opcode.getCommand() == Opcode.Equal:
-        # TODO Equality should be reported somehow
         diffDoc.extend([child.deepcopy() for child in newTree.children])
+        raise DocumentUnchanged(diffDoc)
+    elif opcode.getCommand() == Opcode.Replace:
+        old_children = len(oldTree.children)
+        new_children = len(newTree.children)
+        replace = (Opcode.Replace, 0, old_children, 0, new_children)
+        buildTree(
+            dispatcher, diffDoc, [replace], oldTree, newTree
+        )
+    elif opcode.getCommand() == Opcode.Insert:
+        children = len(newTree.children)
+        insert = (Opcode.Insert, 0, children, 0, children)
+        buildTree(
+            dispatcher, diffDoc, [insert], oldTree, newTree
+        )
+    elif opcode.getCommand() == Opcode.Delete:
+        children = len(oldTree.children)
+        delete = (Opcode.Delete, 0, children, 0, children)
+        buildTree(
+            dispatcher, diffDoc, [delete], oldTree, newTree
+        )
     else:
         buildTree(
             dispatcher, diffDoc, opcode.getSubOpcodes(), oldTree, newTree
@@ -1414,7 +1444,11 @@ def main():
     Text2Words(oldTree).apply()
     Text2Words(newTree).apply()
 
-    diffDoc = createDiff(pub, oldTree, newTree)
+    try:
+        diffDoc = createDiff(pub, oldTree, newTree)
+    except DocumentUnchanged as e:
+        diffDoc = e.document
+
     Words2Text(diffDoc).apply()
     Generated2Inline(diffDoc).apply()
 

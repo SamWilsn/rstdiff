@@ -24,7 +24,7 @@ classifiers = [
 
 setup(
     name="rstdiff",
-    version="0.4.1",
+    version="0.5.0",
     description=description,
     long_description=read("README.rst"),
     classifiers=classifiers,

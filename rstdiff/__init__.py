@@ -296,9 +296,11 @@ class OptionParser3Args(OptionParser):
 ###############################################################################
 # Exceptions
 
+
 class DocumentUnchanged(Exception):
     def __init__(self, document):
         self.document = document
+
 
 ###############################################################################
 ###############################################################################
@@ -426,13 +428,13 @@ class OpcodeCounter:
         """Count opcode in the leaf"""
 
         code = opcode[0]
-        if code not in ('descend', 'equal', 'replace', 'insert', 'delete'):
+        if code not in ("descend", "equal", "replace", "insert", "delete"):
             raise "Invalid Opcode"
         self.__setattr__(code, self.__getattribute__(code) + 1)
 
     def count(self, opcodes=None):
         """Count the opcodes in the list.
-            If the list is a leaf, the counting is delegated to count_leaf
+        If the list is a leaf, the counting is delegated to count_leaf
         """
 
         if opcodes is None:
@@ -574,16 +576,16 @@ class Words2TextVisitor(nodes.SparseNodeVisitor):
 
 class TextReplacer(Transform):
     """Transforms a `Text` node into a new `Text node`
-        with certain strings replaced by new ones.
-        The old and new strings for replacement can be provided
-        as a list of tuples.
+    with certain strings replaced by new ones.
+    The old and new strings for replacement can be provided
+    as a list of tuples.
 
-        E.g:- replacements = [("abc", "xyz), ("lmn", "opq")]
-        "abc" will be replaced by "xyz". In the new text,
-        "lmn" will be replaced by "opq"
+    E.g:- replacements = [("abc", "xyz), ("lmn", "opq")]
+    "abc" will be replaced by "xyz". In the new text,
+    "lmn" will be replaced by "opq"
 
-        The order within `replacements`. The replacements will be 
-        applied on the text from replacements[0] to replacements[n]
+    The order within `replacements`. The replacements will be
+    applied on the text from replacements[0] to replacements[n]
     """
 
     def __init__(self, document, replacements):
@@ -591,8 +593,9 @@ class TextReplacer(Transform):
         Transform.__init__(self, document)
 
     def apply(self):
-        self.document.walk(TextReplaceVisitor(
-            self.document, self.replacements))
+        self.document.walk(
+            TextReplaceVisitor(self.document, self.replacements)
+        )
 
 
 class TextReplaceVisitor(nodes.SparseNodeVisitor):
@@ -1491,21 +1494,15 @@ def createDiff(pub, oldTree, newTree):
         old_children = len(oldTree.children)
         new_children = len(newTree.children)
         replace = (Opcode.Replace, 0, old_children, 0, new_children)
-        buildTree(
-            dispatcher, diffDoc, [replace], oldTree, newTree
-        )
+        buildTree(dispatcher, diffDoc, [replace], oldTree, newTree)
     elif opcode.getCommand() == Opcode.Insert:
         children = len(newTree.children)
         insert = (Opcode.Insert, 0, children, 0, children)
-        buildTree(
-            dispatcher, diffDoc, [insert], oldTree, newTree
-        )
+        buildTree(dispatcher, diffDoc, [insert], oldTree, newTree)
     elif opcode.getCommand() == Opcode.Delete:
         children = len(oldTree.children)
         delete = (Opcode.Delete, 0, children, 0, children)
-        buildTree(
-            dispatcher, diffDoc, [delete], oldTree, newTree
-        )
+        buildTree(dispatcher, diffDoc, [delete], oldTree, newTree)
     else:
         buildTree(
             dispatcher, diffDoc, opcode.getSubOpcodes(), oldTree, newTree

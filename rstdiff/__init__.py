@@ -580,7 +580,7 @@ class TextReplacer(Transform):
     The old and new strings for replacement can be provided
     as a list of tuples.
 
-    E.g:- replacements = [("abc", "xyz), ("lmn", "opq")]
+    E.g:- replacements = [("abc", "xyz"), ("lmn", "opq")]
     "abc" will be replaced by "xyz". In the new text,
     "lmn" will be replaced by "opq"
 

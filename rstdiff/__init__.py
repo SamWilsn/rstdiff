@@ -296,9 +296,11 @@ class OptionParser3Args(OptionParser):
 ###############################################################################
 # Exceptions
 
+
 class DocumentUnchanged(Exception):
     def __init__(self, document):
         self.document = document
+
 
 ###############################################################################
 ###############################################################################
@@ -405,6 +407,45 @@ class Opcode(object):
     def asTuple(self):
         """Return the opcode as a tuple."""
         return tuple(self._tuple)
+
+
+class OpcodeCounter:
+    """Count the different Opcodes in a list"""
+
+    def __init__(self, opcodes):
+        self.descend = 0
+        self.equal = 0
+        self.replace = 0
+        self.insert = 0
+        self.delete = 0
+
+        if len(opcodes) != 1:
+            raise "Invalid Opcodes"
+
+        self.opcodes = opcodes
+
+    def count_leaf(self, opcode):
+        """Count opcode in the leaf"""
+
+        code = opcode[0]
+        if code not in ("descend", "equal", "replace", "insert", "delete"):
+            raise "Invalid Opcode"
+        self.__setattr__(code, self.__getattribute__(code) + 1)
+
+    def count(self, opcodes=None):
+        """Count the opcodes in the list.
+        If the list is a leaf, the counting is delegated to count_leaf
+        """
+
+        if opcodes is None:
+            opcodes = self.opcodes
+
+        for opcode in opcodes:
+            if len(opcode) == 5:
+                self.count_leaf(opcode)
+            else:
+                self.count_leaf(opcode[0:5])
+                self.count(opcode[5])
 
 
 ###############################################################################
@@ -525,6 +566,49 @@ class Words2TextVisitor(nodes.SparseNodeVisitor):
     visit_White = visit_Text
 
     visit_Word = visit_Text
+
+    def unknown_visit(self, node):
+        pass
+
+    def unknown_departure(self, node):
+        pass
+
+
+class TextReplacer(Transform):
+    """Transforms a `Text` node into a new `Text node`
+    with certain strings replaced by new ones.
+    The old and new strings for replacement can be provided
+    as a list of tuples.
+
+    E.g:- replacements = [("abc", "xyz"), ("lmn", "opq")]
+    "abc" will be replaced by "xyz". In the new text,
+    "lmn" will be replaced by "opq"
+
+    The order within `replacements`. The replacements will be
+    applied on the text from replacements[0] to replacements[n]
+    """
+
+    def __init__(self, document, replacements):
+        self.replacements = replacements
+        Transform.__init__(self, document)
+
+    def apply(self):
+        self.document.walk(
+            TextReplaceVisitor(self.document, self.replacements)
+        )
+
+
+class TextReplaceVisitor(nodes.SparseNodeVisitor):
+    def __init__(self, document, replacements):
+        self.replacements = replacements
+        nodes.SparseNodeVisitor.__init__(self, document)
+
+    def visit_Text(self, text):
+        replace_text = str(text)
+        for old, new in self.replacements:
+            replace_text = replace_text.replace(old, new)
+
+        text.parent.replace(text, nodes.Text(replace_text))
 
     def unknown_visit(self, node):
         pass
@@ -1410,21 +1494,15 @@ def createDiff(pub, oldTree, newTree):
         old_children = len(oldTree.children)
         new_children = len(newTree.children)
         replace = (Opcode.Replace, 0, old_children, 0, new_children)
-        buildTree(
-            dispatcher, diffDoc, [replace], oldTree, newTree
-        )
+        buildTree(dispatcher, diffDoc, [replace], oldTree, newTree)
     elif opcode.getCommand() == Opcode.Insert:
         children = len(newTree.children)
         insert = (Opcode.Insert, 0, children, 0, children)
-        buildTree(
-            dispatcher, diffDoc, [insert], oldTree, newTree
-        )
+        buildTree(dispatcher, diffDoc, [insert], oldTree, newTree)
     elif opcode.getCommand() == Opcode.Delete:
         children = len(oldTree.children)
         delete = (Opcode.Delete, 0, children, 0, children)
-        buildTree(
-            dispatcher, diffDoc, [delete], oldTree, newTree
-        )
+        buildTree(dispatcher, diffDoc, [delete], oldTree, newTree)
     else:
         buildTree(
             dispatcher, diffDoc, opcode.getSubOpcodes(), oldTree, newTree

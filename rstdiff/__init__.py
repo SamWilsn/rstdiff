@@ -944,10 +944,21 @@ class DocutilsDispatcher(HashableNodeImpl):
             return node["ids"][0]
         return ""  # No idea...
 
+    def getRefinedSectionName(self, node):
+        """Get section name by ignoring user-specified junk words"""
+        node_name = self.getSectionName(node)
+
+        if hasattr(node.document.settings, "ignore_in_section_name"):
+            for word in node.document.settings.ignore_in_section_name:
+                node_name = node_name.replace(word, "")
+        return node_name
+
     def rootEq_section(self, node, other):
         """Compare sections by their names or normally."""
         if node.document.settings.compare_sections_by_names:
-            return self.getSectionName(node) == self.getSectionName(other)
+            return self.getRefinedSectionName(
+                node
+            ) == self.getRefinedSectionName(other)
         return True
 
     ###########################################################################

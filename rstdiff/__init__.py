@@ -949,9 +949,17 @@ class DocutilsDispatcher(HashableNodeImpl):
         node_name = self.getSectionName(node)
 
         if hasattr(node.document.settings, "ignore_in_section_name"):
+            patterns = []
             for word in node.document.settings.ignore_in_section_name:
-                node_name = node_name.replace(word, "")
-        return node_name
+                # Match only if preceeded by ('^',' ')
+                # and followed by ('$', ' ')
+                patterns.append("(?<=^)" + word + "(?=$| )")
+                patterns.append("(?<= )" + word + "(?=$| )")
+
+            expression = re.compile("|".join(patterns), flags=re.I)
+            node_name = re.sub(expression, " ", node_name)
+
+        return " ".join(node_name.split())
 
     def rootEq_section(self, node, other):
         """Compare sections by their names or normally."""

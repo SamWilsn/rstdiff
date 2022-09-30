@@ -951,10 +951,7 @@ class DocutilsDispatcher(HashableNodeImpl):
         if hasattr(node.document.settings, "ignore_in_section_name"):
             patterns = []
             for word in node.document.settings.ignore_in_section_name:
-                # Match only if preceeded by ('^',' ')
-                # and followed by ('$', ' ')
-                patterns.append("(?<=^)" + word + "(?=$| )")
-                patterns.append("(?<= )" + word + "(?=$| )")
+                patterns.append(r"\b" + word + r"\b")
 
             expression = re.compile("|".join(patterns), flags=re.I)
             node_name = re.sub(expression, " ", node_name)
